@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatar incêndio - FIREGUARD</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #121212;
+      font-family: sans-serif;
+    }
+
+    .relatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: #ff0000;
+      color: #ffffff;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .relatar:hover {
+      background-color: #cc0000;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <a href="tel:193"><button class="relatar">Relatar<br>Incêndio</button></a>
+
+</body>
+</html>

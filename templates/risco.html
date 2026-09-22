@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risco de Incêndio - FIREGUARD</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #004535;
+      color: #ffffff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Container do Medidor Estilo Tanque */
+    .gauge-container {
+      position: relative;
+      width: 220px;
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Desenho do Arco/Trilho */
+    .gauge-body {
+      width: 200px;
+      height: 100px;
+      border-top-left-radius: 100px;
+      border-top-right-radius: 100px;
+      background: conic-gradient(
+        from 270deg at 50% 100%, 
+        #15803d 0deg 45deg,   /* Verde (Baixo) */
+        #ca8a04 45deg 90deg,  /* Amarelo (Médio) */
+        #ea580c 90deg 135deg, /* Laranja (Alto) */
+        #b91c1c 135deg 180deg /* Vermelho (Crítico) */
+      );
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Recorte interno para transformar em um arco fino */
+    .gauge-body::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 75px;
+      background-color: #004535;
+      border-top-left-radius: 75px;
+      border-top-right-radius: 75px;
+    }
+
+    /* Ponteiro do Indicador */
+    .gauge-pointer {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      width: 4px;
+      height: 70px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-90deg);
+      transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 5;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Centro do Ponteiro */
+    .gauge-center {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      z-index: 6;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Rótulo com o Status */
+    .status-risco-texto {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* --- NOVO: BARRA DE RISCO DE 0 A 100 --- */
+    .barra-container {
+      width: 220px;
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .barra-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #cbd5e1;
+      font-weight: bold;
+    }
+
+    .barra-fundo {
+      width: 100%;
+      height: 12px;
+      background-color: #334155;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .barra-progresso {
+      height: 100%;
+      width: 0%; /* Atualizado via JS */
+      background: linear-gradient(90deg, #4ade80, #facc15, #fb923c, #f87171);
+      border-radius: 6px;
+      transition: width 1s ease-in-out;
+    }
+
+    .clima-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      margin-top: 35px;
+    }
+
+    .item-clima {
+      background-color: #334155;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column; 
+      align-items: center;    
+      gap: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .rotulo {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .valor {
+      font-size: 18px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .status-carregando {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Medidor em Arco (Velocímetro/Tanque) -->
+    <div class="gauge-container">
+      <div class="gauge-body"></div>
+      <div id="ponteiro" class="gauge-pointer"></div>
+      <div class="gauge-center"></div>
+    </div>
+
+    <div id="nivel-risco" class="status-risco-texto" style="color: #15803d;">Calculando...</div>
+
+    <!-- Barra Medidora de 0 a 100% -->
+    <div class="barra-container">
+      <div class="barra-labels">
+        <span>Índice de Risco</span>
+        <span id="valor-porcentagem">0%</span>
+      </div>
+      <div class="barra-fundo">
+        <div id="barra-progresso" class="barra-progresso"></div>
+      </div>
+    </div>
+
+    <!-- Dados do Clima -->
+    <div class="clima-grid">
+      <div class="item-clima">
+        <span class="rotulo">🌡️ Temperatura</span>
+        <span id="temp" class="valor">-- °C</span>
+      </div>
+
+      <div class="item-clima">
+        <span class="rotulo">💧 Umidade do Ar</span>
+        <span id="umidade" class="valor">-- %</span>
+      </div>
+
+      <div class="item-clima">
+        <span class="rotulo">💨 Vento</span>
+        <span id="vento" class="valor">-- km/h</span>
+      </div>
+    </div>
+
+    <div id="status" class="status-carregando">Obtendo dados do clima...</div>
+  </div>
+
+  <script>
+    let lat = -22.2819;
+    let lng = -42.5311;
+
+    function calcularPorcentagemRisco(temp, umidade, vento) {
+      // Cálculo proporcional de 0 a 100
+      let pontosUmidade = Math.max(0, (100 - umidade) * 0.6); // Umidade baixa aumenta o risco
+      let pontosTemp = Math.max(0, (temp - 15) * 1.5);        // Temperatura acima de 15°C soma pontos
+      let pontosVento = vento * 0.8;                           // Vento soma pontos
+
+      let riscoTotal = Math.round(pontosUmidade + pontosTemp + pontosVento);
+
+      // Garante limite entre 0% e 100%
+      return Math.min(100, Math.max(0, riscoTotal));
+    }
+
+    function atualizarMedidorRisco(temp, umidade, vento) {
+      const ponteiro = document.getElementById('ponteiro');
+      const textoRisco = document.getElementById('nivel-risco');
+      const barra = document.getElementById('barra-progresso');
+      const textoPorcentagem = document.getElementById('valor-porcentagem');
+
+      // Calcula o índice numérico de 0 a 100
+      const porcentagem = calcularPorcentagemRisco(temp, umidade, vento);
+
+      // Atualiza a barra de progresso e o número
+      barra.style.width = `${porcentagem}%`;
+      textoPorcentagem.innerText = `${porcentagem}%`;
+
+      // Define o ângulo do ponteiro baseado na porcentagem (-67.5deg a +67.5deg)
+      const angulo = -67.5 + (porcentagem / 100) * 135;
+      ponteiro.style.transform = `translateX(-50%) rotate(${angulo}deg)`;
+
+      // Categoria visual e texto
+      if (porcentagem >= 75) {
+        textoRisco.innerText = "CRÍTICO 🔥";
+        textoRisco.style.color = "#f87171";
+      } else if (porcentagem >= 50) {
+        textoRisco.innerText = "ALTO ⚠️";
+        textoRisco.style.color = "#fb923c";
+      } else if (porcentagem >= 25) {
+        textoRisco.innerText = "MÉDIO ";
+        textoRisco.style.color = "#facc15";
+      } else {
+        textoRisco.innerText = "BAIXO ";
+        textoRisco.style.color = "#4ade80";
+      }
+    }
+
+    async function buscarClima(latitude, longitude) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m`;
+
+      try {
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+
+        const temp = dados.current.temperature_2m;
+        const umidade = dados.current.relative_humidity_2m;
+        const vento = dados.current.wind_speed_10m;
+
+        document.getElementById('temp').innerText = `${temp} °C`;
+        document.getElementById('umidade').innerText = `${umidade} %`;
+        document.getElementById('vento').innerText = `${vento} km/h`;
+        document.getElementById('status').innerText = "Dados atualizados em tempo real";
+
+        atualizarMedidorRisco(temp, umidade, vento);
+
+      } catch (erro) {
+        console.error('Erro ao buscar dados:', erro);
+        document.getElementById('status').innerText = "Erro ao carregar dados do clima.";
+      }
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function (posicao) {
+          lat = posicao.coords.latitude;
+          lng = posicao.coords.longitude;
+          buscarClima(lat, lng);
+        },
+        function () {
+          buscarClima(lat, lng);
+        }
+      );
+    } else {
+      buscarClima(lat, lng);
+    }
+  </script>
+
+</body>
+</html>

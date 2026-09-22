@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fauna e Flora - FIREGUARD</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 30px 15px;
+      background-color: #004535;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #4ade80;
+    }
+
+    header p {
+      margin: 8px 0 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .status-bar {
+      background-color: #334155;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .biodiversidade-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .biodiversidade-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-categoria {
+      background-color: #003327;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid #15803d;
+    }
+
+    .card-categoria h2 {
+      margin-top: 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #15803d;
+      padding-bottom: 10px;
+    }
+
+    .card-fauna h2 { color: #facc15; }
+    .card-flora h2 { color: #4ade80; }
+
+    .lista-especies {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARD CLICÁVEL */
+    .item-especie {
+      background-color: #004535;
+      padding: 10px;
+      border-radius: 8px;
+      border-left: 4px solid #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .item-especie:hover {
+      background-color: #005c47;
+      transform: translateY(-2px);
+    }
+
+    .foto-especie {
+      width: 55px;
+      height: 55px;
+      border-radius: 6px;
+      object-fit: cover;
+      background-color: #334155;
+      flex-shrink: 0;
+    }
+
+    .info-especie {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .nome-especie {
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nome-cientifico {
+      font-size: 11px;
+      font-style: italic;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vazio {
+      color: #94a3b8;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    /* ESTILO DO MODAL DE DETALHES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.ativo {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-conteudo {
+      background-color: #003327;
+      border: 1px solid #15803d;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .fechar-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal-imagem {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      background-color: #334155;
+    }
+
+    .modal-titulo {
+      margin: 0;
+      font-size: 20px;
+      color: #4ade80;
+    }
+
+    .modal-subtitulo {
+      font-size: 13px;
+      font-style: italic;
+      color: #94a3b8;
+      margin-top: -10px;
+    }
+
+    .modal-info-linha {
+      font-size: 14px;
+      background: #004535;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .modal-info-linha strong {
+      color: #facc15;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🌲 Fauna & Flora Protegida</h1>
+      <p>Clique em uma espécie para visualizar fotos ampliadas e informações detalhadas.</p>
+    </header>
+
+    <div id="status" class="status-bar">Obtendo sua localização para buscar a biodiversidade local...</div>
+
+    <div class="biodiversidade-grid">
+      <!-- Card Fauna -->
+      <div class="card-categoria card-fauna">
+        <h2>🐾 Fauna Local</h2>
+        <ul id="lista-fauna" class="lista-especies">
+          <li class="vazio">Buscando animais...</li>
+        </ul>
+      </div>
+
+      <!-- Card Flora -->
+      <div class="card-categoria card-flora">
+        <h2>🌱 Flora Local</h2>
+        <ul id="lista-flora" class="lista-especies">
+          <li class="vazio">Buscando plantas...</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE INFORMAÇÕES -->
+  <div id="modal-especie" class="modal-overlay">
+    <div class="modal-conteudo">
+      <button class="fechar-modal" onclick="fecharModal()">&times;</button>
+      <img id="modal-img" class="modal-imagem" src="" alt="Imagem da espécie" />
+      <h3 id="modal-nome" class="modal-titulo">Nome</h3>
+      <div id="modal-cientifico" class="modal-subtitulo">Nome Científico</div>
+
+      <div class="modal-info-linha">
+        <span>Reino:</span>
+        <strong id="modal-reino">--</strong>
+      </div>
+      <div class="modal-info-linha">
+        <span>Família:</span>
+        <strong id="modal-familia">--</strong>
+      </div>
+      <div class="modal-info-linha">
+        <span>Classe/Ordem:</span>
+        <strong id="modal-ordem">--</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let lat = -22.2819;
+    let lng = -42.5311;
+    let bancoEspecies = [];
+
+    // Imagem fallback caso o link da API quebre
+    const IMPLACEHOLDER = "https://via.placeholder.com/150/334155/ffffff?text=Sem+Foto";
+
+    async function buscarBiodiversidade(latitude, longitude) {
+      const listaFauna = document.getElementById('lista-fauna');
+      const listaFlora = document.getElementById('lista-flora');
+      const status = document.getElementById('status');
+
+      const minLat = (latitude - 0.25).toFixed(2);
+      const maxLat = (latitude + 0.25).toFixed(2);
+      const minLng = (longitude - 0.25).toFixed(2);
+      const maxLng = (longitude + 0.25).toFixed(2);
+
+      const urlGBIF = `https://api.gbif.org/v1/occurrence/search?decimalLatitude=${minLat},${maxLat}&decimalLongitude=${minLng},${maxLng}&mediaType=StillImage&limit=80`;
+
+      try {
+        status.innerText = "Consultando catálogo biológico...";
+        const resposta = await fetch(urlGBIF);
+        const dados = await resposta.json();
+
+        listaFauna.innerHTML = "";
+        listaFlora.innerHTML = "";
+        bancoEspecies = [];
+
+        let fauna = [];
+        let flora = [];
+
+        dados.results.forEach(registro => {
+          const nomeComum = registro.vernacularName;
+          const nomeCientifico = registro.species || registro.scientificName;
+
+          // Extrai a URL correta da imagem
+          let imagem = null;
+          if (registro.media && registro.media.length > 0) {
+            const mídiaValida = registro.media.find(m => m.type === "StillImage" || m.identifier);
+            if (mídiaValida) imagem = mídiaValida.identifier;
+          }
+
+          if (nomeCientifico && imagem) {
+            const item = {
+              id: registro.key,
+              comum: nomeComum ? nomeComum.charAt(0).toUpperCase() + nomeComum.slice(1) : nomeCientifico,
+              cientifico: nomeCientifico,
+              foto: imagem,
+              reino: registro.kingdom || "Desconhecido",
+              familia: registro.family || "Não informada",
+              ordem: registro.order || registro.class || "Não informada"
+            };
+
+            if (registro.kingdom === "Animalia" && !fauna.some(e => e.cientifico === item.cientifico)) {
+              fauna.push(item);
+              bancoEspecies.push(item);
+            } else if (registro.kingdom === "Plantae" && !flora.some(e => e.cientifico === item.cientifico)) {
+              flora.push(item);
+              bancoEspecies.push(item);
+            }
+          }
+        });
+
+        // Renderiza Fauna
+        if (fauna.length > 0) {
+          fauna.slice(0, 6).forEach(item => {
+            listaFauna.innerHTML += `
+              <li class="item-especie" onclick="abrirModal(${item.id})">
+                <img class="foto-especie" src="${item.foto}" onerror="this.src='${IMPLACEHOLDER}'" alt="${item.cientifico}" />
+                <div class="info-especie">
+                  <span class="nome-especie">${item.comum}</span>
+                  <span class="nome-cientifico">${item.cientifico}</span>
+                </div>
+              </li>
+            `;
+          });
+        } else {
+          listaFauna.innerHTML = `<li class="vazio">Nenhum animal registrado próximo.</li>`;
+        }
+
+        // Renderiza Flora
+        if (flora.length > 0) {
+          flora.slice(0, 6).forEach(item => {
+            listaFlora.innerHTML += `
+              <li class="item-especie" onclick="abrirModal(${item.id})">
+                <img class="foto-especie" src="${item.foto}" onerror="this.src='${IMPLACEHOLDER}'" alt="${item.cientifico}" />
+                <div class="info-especie">
+                  <span class="nome-especie">${item.comum}</span>
+                  <span class="nome-cientifico">${item.cientifico}</span>
+                </div>
+              </li>
+            `;
+          });
+        } else {
+          listaFlora.innerHTML = `<li class="vazio">Nenhuma planta registrada próxima.</li>`;
+        }
+
+        status.innerText = `Espécies encontradas nas coordenadas (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
+
+      } catch (erro) {
+        console.error("Erro ao carregar espécies:", erro);
+        status.innerText = "Erro ao buscar dados.";
+      }
+    }
+
+    // ABRIR E PREENCHER MODAL
+    function abrirModal(id) {
+      const especie = bancoEspecies.find(e => e.id === id);
+      if (!especie) return;
+
+      const imgModal = document.getElementById('modal-img');
+      imgModal.src = especie.foto;
+      imgModal.onerror = function() { this.src = IMPLACEHOLDER; };
+
+      document.getElementById('modal-nome').innerText = especie.comum;
+      document.getElementById('modal-cientifico').innerText = especie.cientifico;
+      document.getElementById('modal-reino').innerText = especie.reino;
+      document.getElementById('modal-familia').innerText = especie.familia;
+      document.getElementById('modal-ordem').innerText = especie.ordem;
+
+      document.getElementById('modal-especie').classList.add('ativo');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-especie').classList.remove('ativo');
+    }
+
+    // Geolocalização
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function (posicao) {
+          lat = posicao.coords.latitude;
+          lng = posicao.coords.longitude;
+          buscarBiodiversidade(lat, lng);
+        },
+        function () {
+          buscarBiodiversidade(lat, lng);
+        }
+      );
+    } else {
+      buscarBiodiversidade(lat, lng);
+    }
+  </script>
+
+</body>
+</html>
