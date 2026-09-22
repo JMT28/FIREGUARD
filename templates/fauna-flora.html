@@ -26,7 +26,25 @@
       flex-direction: column;
       gap: 20px;
     }
+    .btn-voltar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background-color: #005000;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.2s;
+    }
 
+    .btn-voltar:hover {
+      background-color: #00ff50;
+      color: #000000;
+    }
     header {
       text-align: center;
       margin-bottom: 10px;
@@ -430,6 +448,7 @@
       buscarBiodiversidade(lat, lng);
     }
   </script>
-
+  <!-- Botão Voltar -->
+  <a href="/" class="btn-voltar">&larr; Voltar</a>
 </body>
 </html>
