@@ -3,13 +3,13 @@
   "name": "FIREGUARD - Monitoramento Ambiental",
   "icons": [
     {
-      "src": "/static/logo.png",
+      "src": "/static/logo.jpeg",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/static/logo.png",
-      "type": "image/png",
+      "src": "/static/logo.jpeg",
+      "type": "image/jpeg",
       "sizes": "512x512"
     }
   ],

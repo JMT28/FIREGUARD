@@ -104,6 +104,14 @@
       });
     }
   </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/static/service-worker.js")
+            .then(() => console.log("FIREGUARD: Service Worker ativo"))
+            .catch(error => console.error("Erro:", error));
+    });
+}
+</script>
 </body>
 </html>
