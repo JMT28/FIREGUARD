@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+  <meta charset="UTF-8">
+  <title>FIREGUARD</title>
+
+  <!-- Ícone para a aba do navegador (Favicon) -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+  <!-- Ícone para quando o usuário adiciona à Tela Inicial do Celular/Chromebook (PWA/Web App) -->
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa - FIREGUARD</title>
