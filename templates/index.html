@@ -2,13 +2,18 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FIREGUARD</title>
 
-  <!-- Ícone para a aba do navegador (Favicon) -->
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+  <!-- Cor da barra do navegador em celulares -->
+  <meta name="theme-color" content="#007000">
 
-  <!-- Ícone para quando o usuário adiciona à Tela Inicial do Celular/Chromebook (PWA/Web App) -->
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
+  <!-- Ícones para a aba e navegadores -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.jpeg') }}">
+
+  <!-- Arquivo de instalação do App (PWA) -->
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa - FIREGUARD</title>

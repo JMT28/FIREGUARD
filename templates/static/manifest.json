@@ -1,0 +1,20 @@
+{
+  "short_name": "FIREGUARD",
+  "name": "FIREGUARD - Monitoramento Ambiental",
+  "icons": [
+    {
+      "src": "/static/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#007000",
+  "theme_color": "#007000",
+  "display": "standalone"
+}
